@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+require File.expand_path(
+    File.join(File.dirname(__FILE__), %w[.. lib couch_replicate]))
+
+require File.expand_path(
+    File.join(File.dirname(__FILE__), %w[.. lib couch_replicate command_line]))
+
+CouchReplicate::CommandLine.run ARGV
