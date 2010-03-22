@@ -1,9 +1,15 @@
 = couch-replicate
 
-Description goes here.
+Setup replication between CouchDB hosts.
+
+From the command line:
+
+  couch-replicate db_name http://couch01.local:5984 http://couch02.local:5984 ...
+
+Available options are --link, --reverse, -n
 
 == Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
