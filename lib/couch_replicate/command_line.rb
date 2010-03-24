@@ -47,12 +47,30 @@ module CouchReplicate
         opts.on("-n", "-number [LINK_EVERY=3]", "link every n hosts") do |n|
           @options[:n] = n.to_i > 0 ? n.to_i : 3
         end
+
+        opts.separator ""
+
+        opts.on_tail("-v", "--version", "Show version") do
+          puts File.basename($0) + " "  + CouchReplicate.version
+          exit
+        end
+
+        # No argument, shows at tail.  This will print an options summary.
+        # Try it and see!
+        opts.on_tail("-h", "--help", "Show this message") do
+          puts opts
+          exit
+        end
       end
 
       begin
         options_parser.parse!(args)
         @database = args.shift
         @hosts = args
+
+        if @options[:n] && (@options[:n] == @hosts.length + 1)
+          raise OptionParser::InvalidOption.new("The number of hosts cannot equal the replication shift.")
+        end
       rescue OptionParser::InvalidOption => e
         raise e
       end

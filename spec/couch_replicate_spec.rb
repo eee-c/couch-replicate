@@ -16,6 +16,33 @@ describe "CouchReplicate" do
     CouchReplicate.replicate(@src_host, @target_host, @db)
   end
 
+  it "should default replication to port 5984" do
+    RestClient.
+      should_receive(:post).
+      with("#{@src_host}/_replicate",
+           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+
+    CouchReplicate.replicate(@src_host.sub(/:5984/, ''), @target_host, @db)
+  end
+
+  it "should default replication to HTTP" do
+    RestClient.
+      should_receive(:post).
+      with("#{@src_host}/_replicate",
+           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+
+    CouchReplicate.replicate(@src_host.sub(/http:\/\//, ''), @target_host, @db)
+  end
+
+  it "should not care if URL ends with a slash" do
+    RestClient.
+      should_receive(:post).
+      with("#{@src_host}/_replicate",
+           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+
+    CouchReplicate.replicate(@src_host + '/', @target_host, @db)
+  end
+
   context "replicating to multiple hosts" do
     before(:each) do
       @host01 = 'http://couch01.example.org:5984'
@@ -65,6 +92,13 @@ describe "CouchReplicate" do
         with(@host05, @host03, @db)
 
       CouchReplicate.nth(3, @db, [@host01, @host02, @host03, @host04, @host05])
+    end
+
+    it "should do nothing when node replicate to themselves" do
+      CouchReplicate.
+        should_not_receive(:replicate)
+
+      CouchReplicate.nth(5, @db, [@host01, @host02, @host03, @host04, @host05])
     end
   end
 end
