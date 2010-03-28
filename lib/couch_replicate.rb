@@ -8,8 +8,8 @@ module CouchReplicate
   def self.replicate(source_host, target_host, db)
     source = hostify(source_host)
     target = hostify(target_host)
-    RestClient.post("#{source}/_replicate",
-                    %Q|{"source":"#{db}", "target":"#{target}/#{db}", "continuous":true}|)
+    RestClient.post("#{target}/_replicate",
+                    %Q|{"source":"#{source}/#{db}", "target":"#{db}", "continuous":true}|)
   end
 
   def self.link(db, hosts)

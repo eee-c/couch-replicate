@@ -7,11 +7,20 @@ describe "CouchReplicate" do
     @db  = 'test'
   end
 
+  it "should default to local target (pull) replicate" do
+    RestClient.
+      should_receive(:post).
+      with("#{@target_host}/_replicate",
+           %Q|{"source":"#{@src_host}/#{@db}", "target":"#{@db}", "continuous":true}|)
+
+    CouchReplicate.replicate(@src_host, @target_host, @db)
+  end
+
   it "should be able to tell a node to replicate itself" do
     RestClient.
       should_receive(:post).
-      with("#{@src_host}/_replicate",
-           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+      with("#{@target_host}/_replicate",
+           %Q|{"source":"#{@src_host}/#{@db}", "target":"#{@db}", "continuous":true}|)
 
     CouchReplicate.replicate(@src_host, @target_host, @db)
   end
@@ -19,8 +28,8 @@ describe "CouchReplicate" do
   it "should default replication to port 5984" do
     RestClient.
       should_receive(:post).
-      with("#{@src_host}/_replicate",
-           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+      with("#{@target_host}/_replicate",
+           %Q|{"source":"#{@src_host}/#{@db}", "target":"#{@db}", "continuous":true}|)
 
     CouchReplicate.replicate(@src_host.sub(/:5984/, ''), @target_host, @db)
   end
@@ -28,8 +37,8 @@ describe "CouchReplicate" do
   it "should default replication to HTTP" do
     RestClient.
       should_receive(:post).
-      with("#{@src_host}/_replicate",
-           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+      with("#{@target_host}/_replicate",
+           %Q|{"source":"#{@src_host}/#{@db}", "target":"#{@db}", "continuous":true}|)
 
     CouchReplicate.replicate(@src_host.sub(/http:\/\//, ''), @target_host, @db)
   end
@@ -37,8 +46,8 @@ describe "CouchReplicate" do
   it "should not care if URL ends with a slash" do
     RestClient.
       should_receive(:post).
-      with("#{@src_host}/_replicate",
-           %Q|{"source":"#{@db}", "target":"#{@target_host}/#{@db}", "continuous":true}|)
+      with("#{@target_host}/_replicate",
+           %Q|{"source":"#{@src_host}/#{@db}", "target":"#{@db}", "continuous":true}|)
 
     CouchReplicate.replicate(@src_host + '/', @target_host, @db)
   end
